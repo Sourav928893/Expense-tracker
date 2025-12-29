@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="colorPrimary">#1A237E</color>
+    <color name="colorPrimaryDark">#000051</color>
+    <color name="colorAccent">#448AFF</color>
+    
+    <color name="income_green">#4CAF50</color>
+    <color name="expense_red">#FF5252</color>
+    <color name="gray_light">#F5F5F5</color>
+    
+    <!-- Logo Colors -->
+    <color name="ic_launcher_background">#FFFFFF</color> <!-- Changed to Pure White -->
+</resources>
