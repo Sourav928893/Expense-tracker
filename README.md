@@ -34,5 +34,16 @@ track income and expenses efficiently.
 
 ---
 
+## 🎥 Demo Video
+
+**Video is large; click to watch:**
+
+[Watch Demo Video](https://github.com/Sourav928893/Expense-tracker/blob/master/VIDEO.mp4)
+
+> ⚠️ Tip: For better experience, upload video to **YouTube (Unlisted)** or **Google Drive**  
+> and link it here — GitHub does not stream large videos smoothly.
+
+---
+
 ## 👨‍💻 Developer
 **Sourav**
