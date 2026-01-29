@@ -1,4 +1,4 @@
-package com.sourav.expensetracker;
+package com.souravkaushik.expensetracker;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -9,7 +9,8 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.sourav.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -21,9 +22,15 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
 
     private List<Transaction> transactions = new ArrayList<>();
     private OnItemClickListener listener;
+    private final CurrencyManager currencyManager;
 
     public interface OnItemClickListener {
         void onItemClick(Transaction transaction);
+    }
+
+    // Constructor updated to accept CurrencyManager
+    public TransactionAdapter(CurrencyManager currencyManager) {
+        this.currencyManager = currencyManager;
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -48,7 +55,9 @@ public class TransactionAdapter extends RecyclerView.Adapter<TransactionAdapter.
         Transaction currentTransaction = transactions.get(position);
         holder.textCategory.setText(currentTransaction.getCategory());
         holder.textNote.setText(currentTransaction.getNote());
-        holder.textAmount.setText(String.format(Locale.getDefault(), "$%.2f", currentTransaction.getAmount()));
+        
+        // Use currencyManager to format the amount dynamically
+        holder.textAmount.setText(currencyManager.formatAmount(currentTransaction.getAmount()));
         
         SimpleDateFormat sdf = new SimpleDateFormat("MMM dd, yyyy", Locale.getDefault());
         holder.textDate.setText(sdf.format(new Date(currentTransaction.getDate())));

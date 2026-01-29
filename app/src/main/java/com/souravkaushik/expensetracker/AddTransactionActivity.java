@@ -1,4 +1,4 @@
-package com.sourav.expensetracker;
+package com.souravkaushik.expensetracker;
 
 import android.app.DatePickerDialog;
 import android.os.Bundle;
@@ -13,8 +13,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.button.MaterialButtonToggleGroup;
 import com.google.android.material.textfield.TextInputEditText;
-import com.sourav.expensetracker.data.AppDatabase;
-import com.sourav.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.data.AppDatabase;
+import com.souravkaushik.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;

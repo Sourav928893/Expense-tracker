@@ -3,11 +3,11 @@ plugins {
 }
 
 android {
-    namespace = "com.sourav.expensetracker"
+    namespace = "com.souravkaushik.expensetracker"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.sourav.expensetracker"
+        applicationId = "com.souravkaushik.expensetracker"
         minSdk = 24
         targetSdk = 36
         versionCode = 1
@@ -26,8 +26,8 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_1_8
-        targetCompatibility = JavaVersion.VERSION_1_8
+        sourceCompatibility = JavaVersion.VERSION_11
+        targetCompatibility = JavaVersion.VERSION_11
     }
     packaging {
         resources {
@@ -50,6 +50,9 @@ dependencies {
     implementation(libs.itext7.kernel)
     implementation(libs.itext7.layout)
     implementation(libs.itext7.io)
+
+    // AdMob
+    implementation(libs.play.services.ads)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)

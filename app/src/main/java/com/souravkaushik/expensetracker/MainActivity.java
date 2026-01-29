@@ -1,8 +1,7 @@
-package com.sourav.expensetracker;
+package com.souravkaushik.expensetracker;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.PopupMenu;
@@ -15,9 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.ads.AdRequest;
+import com.google.android.gms.ads.AdView;
+import com.google.android.gms.ads.LoadAdError;
+import com.google.android.gms.ads.MobileAds;
+import com.google.android.gms.ads.interstitial.InterstitialAd;
+import com.google.android.gms.ads.interstitial.InterstitialAdLoadCallback;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.sourav.expensetracker.data.AppDatabase;
-import com.sourav.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.AddTransactionActivity;
+import com.souravkaushik.expensetracker.CurrencyManager;
+import com.souravkaushik.expensetracker.R;
+import com.souravkaushik.expensetracker.TransactionAdapter;
+import com.souravkaushik.expensetracker.data.AppDatabase;
+import com.souravkaushik.expensetracker.data.Transaction;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -34,11 +43,28 @@ public class MainActivity extends AppCompatActivity implements TransactionAdapte
     private TransactionAdapter adapter;
     private AppDatabase database;
     private Calendar currentMonth;
+    private CurrencyManager currencyManager;
+
+    private AdView mAdView;
+    private InterstitialAd mInterstitialAd;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        currencyManager = new CurrencyManager(this);
+
+        // Initialize AdMob
+        MobileAds.initialize(this, initializationStatus -> {});
+
+        // Load Banner Ad
+        mAdView = findViewById(R.id.adView);
+        AdRequest adRequest = new AdRequest.Builder().build();
+        mAdView.loadAd(adRequest);
+
+        // Load Interstitial Ad
+        loadInterstitialAd();
 
         // Initialize Calendar to current month
         currentMonth = Calendar.getInstance();
@@ -62,17 +88,16 @@ public class MainActivity extends AppCompatActivity implements TransactionAdapte
 
         // Setup RecyclerView
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
-        adapter = new TransactionAdapter();
+        adapter = new TransactionAdapter(currencyManager);
         adapter.setOnItemClickListener(this);
         recyclerView.setAdapter(adapter);
 
         // Initialize Database
         database = AppDatabase.getDatabase(this);
 
-        // Setup Buttons
+        // Add Button Click
         fabAdd.setOnClickListener(v -> {
-            Intent intent = new Intent(MainActivity.this, AddTransactionActivity.class);
-            startActivity(intent);
+            showInterstitialAdAndNavigate();
         });
 
         btnPrevMonth.setOnClickListener(v -> {
@@ -93,10 +118,61 @@ public class MainActivity extends AppCompatActivity implements TransactionAdapte
         updateMonthDisplay();
     }
 
+    private void loadInterstitialAd() {
+        AdRequest adRequest = new AdRequest.Builder().build();
+        InterstitialAd.load(this, "ca-app-pub-4041401840560784/1539363552", adRequest,
+                new InterstitialAdLoadCallback() {
+                    @Override
+                    public void onAdLoaded(@NonNull InterstitialAd interstitialAd) {
+                        mInterstitialAd = interstitialAd;
+                    }
+
+                    @Override
+                    public void onAdFailedToLoad(@NonNull LoadAdError loadAdError) {
+                        mInterstitialAd = null;
+                    }
+                });
+    }
+
+    private void showInterstitialAdAndNavigate() {
+        if (mInterstitialAd != null) {
+            mInterstitialAd.show(this);
+            mInterstitialAd.setFullScreenContentCallback(new com.google.android.gms.ads.FullScreenContentCallback() {
+                @Override
+                public void onAdDismissedFullScreenContent() {
+                    mInterstitialAd = null;
+                    loadInterstitialAd(); // Load next one
+                    startActivity(new Intent(MainActivity.this, AddTransactionActivity.class));
+                }
+            });
+        } else {
+            startActivity(new Intent(MainActivity.this, AddTransactionActivity.class));
+        }
+    }
+
     @Override
     protected void onResume() {
         super.onResume();
         loadData();
+        if (mAdView != null) {
+            mAdView.resume();
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        if (mAdView != null) {
+            mAdView.pause();
+        }
+        super.onPause();
+    }
+
+    @Override
+    protected void onDestroy() {
+        if (mAdView != null) {
+            mAdView.destroy();
+        }
+        super.onDestroy();
     }
 
     private void updateMonthDisplay() {
@@ -112,22 +188,46 @@ public class MainActivity extends AppCompatActivity implements TransactionAdapte
         popup.getMenu().clear();
         popup.getMenu().add(0, 100, 0, "Export to CSV");
         popup.getMenu().add(0, 101, 0, "Export to PDF");
+        popup.getMenu().add(0, 103, 0, "Change Currency");
         popup.getMenu().add(0, 102, 0, "Clear All Data");
 
         popup.setOnMenuItemClickListener(item -> {
-            if (item.getItemId() == 100) {
+            int id = item.getItemId();
+            if (id == 100) {
                 exportData("csv");
                 return true;
-            } else if (item.getItemId() == 101) {
+            } else if (id == 101) {
                 exportData("pdf");
                 return true;
-            } else if (item.getItemId() == 102) {
+            } else if (id == 103) {
+                showCurrencySelectionDialog();
+                return true;
+            } else if (id == 102) {
                 clearAllData();
                 return true;
             }
             return false;
         });
         popup.show();
+    }
+
+    private void showCurrencySelectionDialog() {
+        List<String> currencies = CurrencyManager.getAllCurrencies();
+        String[] currencyArray = currencies.toArray(new String[0]);
+        
+        int currentIndex = currencies.indexOf(currencyManager.getSelectedCurrencyCode());
+
+        new AlertDialog.Builder(this)
+                .setTitle("Select Currency")
+                .setSingleChoiceItems(currencyArray, currentIndex, (dialog, which) -> {
+                    String selectedCode = currencyArray[which];
+                    currencyManager.setSelectedCurrency(selectedCode);
+                    dialog.dismiss();
+                    loadData(); // Refresh UI with new currency
+                    Toast.makeText(this, "Currency changed to " + selectedCode, Toast.LENGTH_SHORT).show();
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
     }
 
     private void loadData() {
@@ -158,9 +258,9 @@ public class MainActivity extends AppCompatActivity implements TransactionAdapte
                     recyclerView.setVisibility(View.VISIBLE);
                 }
 
-                textTotalIncome.setText(String.format(Locale.getDefault(), "$%.2f", totalIncome));
-                textTotalExpense.setText(String.format(Locale.getDefault(), "$%.2f", totalExpense));
-                textBalance.setText(String.format(Locale.getDefault(), "$%.2f", balance));
+                textTotalIncome.setText(currencyManager.formatAmount(totalIncome));
+                textTotalExpense.setText(currencyManager.formatAmount(totalExpense));
+                textBalance.setText(currencyManager.formatAmount(balance));
             });
         });
     }

@@ -1,4 +1,4 @@
-package com.sourav.expensetracker;
+package com.souravkaushik.expensetracker;
 
 import android.app.NotificationChannel;
 import android.app.NotificationManager;
@@ -26,7 +26,7 @@ import com.itextpdf.layout.Document;
 import com.itextpdf.layout.element.Paragraph;
 import com.itextpdf.layout.element.Table;
 import com.itextpdf.layout.properties.TextAlignment;
-import com.sourav.expensetracker.data.Transaction;
+import com.souravkaushik.expensetracker.data.Transaction;
 
 import java.io.File;
 import java.io.IOException;

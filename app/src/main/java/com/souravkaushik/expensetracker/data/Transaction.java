@@ -1,4 +1,4 @@
-package com.sourav.expensetracker.data;
+package com.souravkaushik.expensetracker.data;
 
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;

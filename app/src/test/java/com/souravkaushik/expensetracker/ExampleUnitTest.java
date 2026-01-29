@@ -1,4 +1,4 @@
-package com.sourav.expensetracker;
+package com.souravkaushik.expensetracker;
 
 import org.junit.Test;
 

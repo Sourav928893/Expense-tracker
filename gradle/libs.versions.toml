@@ -9,6 +9,8 @@ activity = "1.12.2"
 constraintlayout = "2.2.1"
 room = "2.6.1"
 itext7 = "7.2.5"
+playServicesAds = "23.6.0"
+playServicesAdsApi = "24.9.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -20,11 +22,13 @@ activity = { group = "androidx.activity", name = "activity", version.ref = "acti
 constraintlayout = { group = "androidx.constraintlayout", name = "constraintlayout", version.ref = "constraintlayout" }
 room-runtime = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+play-services-ads = { group = "com.google.android.gms", name = "play-services-ads", version.ref = "playServicesAds" }
 
 # iText 7 Core
 itext7-kernel = { group = "com.itextpdf", name = "kernel", version.ref = "itext7" }
 itext7-layout = { group = "com.itextpdf", name = "layout", version.ref = "itext7" }
 itext7-io = { group = "com.itextpdf", name = "io", version.ref = "itext7" }
+play-services-ads-api = { group = "com.google.android.gms", name = "play-services-ads-api", version.ref = "playServicesAdsApi" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
